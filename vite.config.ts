@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'prompt', // show "Update available" banner instead of silently staying stale
       includeAssets: ['icon.svg', 'apple-touch-icon-180x180.png'],
       manifest: {
-        name: 'HomeHub',
-        short_name: 'HomeHub',
+        name: 'bannalign',
+        short_name: 'bannalign',
         description: 'Our household, in one place.',
         start_url: '/',
         display: 'standalone',

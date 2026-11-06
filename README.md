@@ -1,6 +1,6 @@
-# HomeHub
+# bannalign
 
-Our household app: a mobile web app (PWA) for groceries and household lists, with recipes, house maintenance and plants coming next.
+The household app for 6 Bannatyne: a mobile web app (PWA) for groceries and household lists, with recipes, house maintenance and plants coming next.
 
 - **Stack:** Vite + React + TypeScript, Dexie (offline-first local DB), Supabase (Postgres, auth, realtime), hosted on Vercel.
 - **Run locally:** `npm install`, then `npm run dev`. Without `.env.local` it runs in local-only mode with no sign-in.

@@ -1,4 +1,4 @@
--- HomeHub schema. Paste into Supabase → SQL Editor → Run. Safe to re-run.
+-- bannalign schema. Paste into Supabase → SQL Editor → Run. Safe to re-run.
 
 -- Who may read/write anything. Only these emails are part of the household.
 create table if not exists public.members (email text primary key);

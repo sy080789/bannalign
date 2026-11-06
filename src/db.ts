@@ -41,7 +41,7 @@ export interface Meta {
   value: string
 }
 
-export const db = new Dexie('homehub') as Dexie & {
+export const db = new Dexie('bannalign') as Dexie & {
   lists: EntityTable<List, 'id'>
   items: EntityTable<Item, 'id'>
   outbox: EntityTable<OutboxEntry, 'key'>

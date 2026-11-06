@@ -24,7 +24,7 @@ export function Login() {
   return (
     <form className="login" onSubmit={submit}>
       <img src="/icon.svg" alt="" width={72} height={72} />
-      <h1>HomeHub</h1>
+      <h1>bannalign</h1>
       <input type="email" name="username" autoComplete="username" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       <input type="password" name="password" autoComplete="current-password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       {error && <p className="error">{error}</p>}
