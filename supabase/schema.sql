@@ -74,3 +74,45 @@ do $$ begin
   alter publication supabase_realtime add table public.lists, public.items;
 exception when duplicate_object then null;
 end $$;
+
+-- ---------- Phase 2: Recipes ----------
+
+alter table public.items add column if not exists source text;
+
+create table if not exists public.recipes (
+  id text primary key,
+  name text not null,
+  source_url text not null default '',
+  image_url text not null default '',
+  servings text not null default '',
+  total_time text not null default '',
+  ingredients jsonb not null default '[]',
+  steps jsonb not null default '[]',
+  notes text not null default '',
+  tags jsonb not null default '[]',
+  favorite boolean not null default false,
+  last_cooked timestamptz,
+  updated_at timestamptz not null,
+  deleted boolean not null default false,
+  synced_at timestamptz not null default now()
+);
+
+create index if not exists recipes_synced_at on public.recipes (synced_at);
+drop trigger if exists recipes_lww on public.recipes;
+create trigger recipes_lww before insert or update on public.recipes for each row execute function public.lww();
+
+alter table public.recipes enable row level security;
+drop policy if exists members_all on public.recipes;
+create policy members_all on public.recipes for all to authenticated using (public.is_member()) with check (public.is_member());
+
+do $$ begin
+  alter publication supabase_realtime add table public.recipes;
+exception when duplicate_object then null;
+end $$;
+
+-- Photos: public bucket with random file names (works offline via the service-worker cache).
+-- Only household members can upload.
+insert into storage.buckets (id, name, public) values ('photos', 'photos', true) on conflict do nothing;
+drop policy if exists photos_member_insert on storage.objects;
+create policy photos_member_insert on storage.objects for insert to authenticated
+  with check (bucket_id = 'photos' and public.is_member());

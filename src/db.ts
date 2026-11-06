@@ -26,9 +26,24 @@ export interface Item extends Row {
   staple: boolean
   in_list: boolean
   checked: boolean
+  source?: string | null // recipe name this was added for, shown as "for Tacos"
 }
 
-export type TableName = 'lists' | 'items'
+export interface Recipe extends Row {
+  name: string
+  source_url: string
+  image_url: string
+  servings: string
+  total_time: string
+  ingredients: string[] // original text lines; parsed only when adding to a list
+  steps: string[]
+  notes: string
+  tags: string[]
+  favorite: boolean
+  last_cooked: string | null
+}
+
+export type TableName = 'lists' | 'items' | 'recipes'
 
 export interface OutboxEntry {
   key: string // `${table}:${id}` — one entry per row, so repeated edits coalesce
@@ -44,6 +59,7 @@ export interface Meta {
 export const db = new Dexie('bannalign') as Dexie & {
   lists: EntityTable<List, 'id'>
   items: EntityTable<Item, 'id'>
+  recipes: EntityTable<Recipe, 'id'>
   outbox: EntityTable<OutboxEntry, 'key'>
   meta: EntityTable<Meta, 'key'>
 }
@@ -54,6 +70,8 @@ db.version(1).stores({
   outbox: 'key',
   meta: 'key',
 })
+
+db.version(2).stores({ recipes: 'id' })
 
 export const DEFAULT_LISTS: Omit<List, 'updated_at'>[] = [
   { id: 'groceries', name: 'Groceries', sort: 0 },

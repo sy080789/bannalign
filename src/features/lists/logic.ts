@@ -30,7 +30,7 @@ export function addByName(existing: Item[], listId: string, rawName: string, qty
 
 /** "Clear checked": staples go back to Usuals, one-offs fall into history. */
 export function clearChecked(items: Item[]): Item[] {
-  return items.filter((i) => i.in_list && i.checked).map((i) => ({ ...i, in_list: false, checked: false }))
+  return items.filter((i) => i.in_list && i.checked).map((i) => ({ ...i, in_list: false, checked: false, source: null }))
 }
 
 export const onList = (items: Item[]) => items.filter((i) => i.in_list && !i.deleted)

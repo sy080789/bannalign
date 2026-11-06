@@ -123,7 +123,10 @@ function ItemRow({ item, onToggle, onEdit, onStar }: RowProps) {
         {item.checked && <Icon name="check" size={18} />}
       </button>
       <button className="row-main" onClick={() => onEdit(item)}>
-        <span className="name">{item.name}</span>
+        <span className="name">
+          {item.name}
+          {item.source && <small className="source">for {item.source}</small>}
+        </span>
         {item.qty && <span className="qty">{item.qty}</span>}
       </button>
       <button

@@ -32,7 +32,7 @@ export function QuickAdd({ listId, onListChange, onAdded }: Props) {
     setText('') // clear first so fast typing doesn't append to the old value
     const row = addByName(items, listId, value)
     if (row) {
-      await save('items', row)
+      await save('items', { ...row, source: null }) // typed by hand, not for a recipe
       onAdded?.(`Added ${row.name}`)
     } else if (value.trim()) {
       onAdded?.(`${value.trim()} is already on the list`)

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **bannalign** is a household app for two people (Stephen and Amanda) at 6 Bannatyne. It's an installable mobile web app (PWA) used on iPhones from the home screen. It's not in the App Store. Everything has to stay on free tiers (Vercel, Supabase, GitHub). The owner isn't technical, and Claude owns the code end to end.
 
-Roadmap: Lists (groceries + household, **done**) → Recipes (adds ingredients to Groceries) → House maintenance (seasonal checklist with completion log, plus "issues" with photo timelines) → Plants (watering schedule) → read-only Google Calendar. Push notifications come with Maintenance/Plants. HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
+Roadmap: Lists (groceries + household, **done**) → Recipes (**done**) → House maintenance (seasonal checklist with completion log, plus "issues" with photo timelines) → Plants (watering schedule) → read-only Google Calendar. Push notifications come with Maintenance/Plants. HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
 
 ## Commands
 
@@ -17,7 +17,8 @@ On this Windows machine, Node and Git may be missing from PATH in a fresh shell.
 - Lint: `npm run lint` (oxlint)
 - Tests: `npx vitest run`. Single file: `npx vitest run src/features/lists/logic.test.ts`. Single test: add `-t "name"`.
 - Regenerate PWA icons from `public/icon.svg`: `npx pwa-assets-generator`
-- Deploy: push to `main` on `github.com/sy080789/bannalign`. Vercel auto-deploys. `vercel.json` rewrites app routes to `index.html`.
+- Deploy: push to `main` on `github.com/sy080789/bannalign`. Vercel auto-deploys. `vercel.json` rewrites app routes to `index.html`, excluding `/api/`.
+- Schema changes: edit `supabase/schema.sql`, which must stay idempotent, then ask Stephen to re-run it in the Supabase SQL Editor.
 
 ## Architecture
 
@@ -46,6 +47,19 @@ On this Windows machine, Node and Git may be missing from PATH in a fresh shell.
 - Aisle grouping uses a keyword map with the longest keyword matched first (`categories.ts`).
 
 Keep pure logic in `logic.ts`-style modules so Vitest can test it without a browser.
+
+**Recipes and server functions.**
+- `api/*.ts` are Vercel functions using the Web signature (`export async function GET(req: Request)`).
+- In dev, the `devApi` plugin in `vite.config.ts` serves them through `ssrLoadModule`.
+- Their relative imports **must use `.js` extensions**. Vercel runs them as native ESM, and `tsconfig.node.json` (nodenext) type-checks `api/` to enforce this.
+- `api/_lib/guard.ts` handles:
+  - the Supabase-token auth check (skipped when the Supabase env vars are missing, e.g. local dev)
+  - SSRF protection (blocks private IPs and re-checks every redirect)
+  - size and time limits
+- `/api/scrape` reads schema.org Recipe JSON-LD (`src/features/recipes/extract.ts`, pure code), falling back to `og:` tags. `/api/image` proxies images.
+- The scraper identifies itself honestly. Many sites (AllRecipes, Serious Eats, Budget Bytes) answer with 403. The app then fills in the name from the URL and asks the user to paste the ingredients. **Don't add bot-check evasion** (spoofed browser UAs, crawler UAs, scraping proxies).
+- Recipe ingredients are stored as their original lines. `ingredients.ts` parses them only in `AddToListSheet`, which reuses `addByName` and sets `items.source` to the recipe name (shown as "for X"). `source` is cleared by "Clear checked" and by hand entry in `QuickAdd`.
+- Photos: `photo.ts` resizes to WebP (with a JPEG fallback) and uploads to the public Supabase Storage bucket `photos` under a random UUID name. Workbox caches them for offline use. In local-only mode they're stored as data URLs.
 
 **PWA.** `vite-plugin-pwa` uses `registerType: 'prompt'`. `UpdateBanner` checks for a new version each time the app comes to the foreground and shows "tap to update", because installed iOS web apps otherwise hold on to old versions.
 
