@@ -26,6 +26,11 @@ export function ListsPage() {
 
   const toggle = (i: Item) => save('items', { ...i, checked: !i.checked })
 
+  async function star(i: Item) {
+    await save('items', { ...i, staple: !i.staple })
+    toast.show(i.staple ? `${i.name} removed from Usuals` : `${i.name} added to Usuals`, () => save('items', i))
+  }
+
   async function clear() {
     const before = done
     for (const r of clearChecked(done)) await save('items', r)
@@ -76,7 +81,7 @@ export function ListsPage() {
           <h2>{cat}</h2>
           <ul className="card rows">
             {g.map((i) => (
-              <ItemRow key={i.id} item={i} onToggle={toggle} onEdit={setEditing} />
+              <ItemRow key={i.id} item={i} onToggle={toggle} onEdit={setEditing} onStar={star} />
             ))}
           </ul>
         </section>
@@ -92,7 +97,7 @@ export function ListsPage() {
           </div>
           <ul className="card rows done">
             {done.map((i) => (
-              <ItemRow key={i.id} item={i} onToggle={toggle} onEdit={setEditing} />
+              <ItemRow key={i.id} item={i} onToggle={toggle} onEdit={setEditing} onStar={star} />
             ))}
           </ul>
         </section>
@@ -104,7 +109,14 @@ export function ListsPage() {
   )
 }
 
-function ItemRow({ item, onToggle, onEdit }: { item: Item; onToggle: (i: Item) => void; onEdit: (i: Item) => void }) {
+interface RowProps {
+  item: Item
+  onToggle: (i: Item) => void
+  onEdit: (i: Item) => void
+  onStar: (i: Item) => void
+}
+
+function ItemRow({ item, onToggle, onEdit, onStar }: RowProps) {
   return (
     <li className="row">
       <button className={`check ${item.checked ? 'on' : ''}`} onClick={() => onToggle(item)} aria-label={item.checked ? `Uncheck ${item.name}` : `Check ${item.name}`}>
@@ -114,11 +126,14 @@ function ItemRow({ item, onToggle, onEdit }: { item: Item; onToggle: (i: Item) =
         <span className="name">{item.name}</span>
         {item.qty && <span className="qty">{item.qty}</span>}
       </button>
-      {item.staple && (
-        <span className="star" aria-label="Usual">
-          <Icon name="star" filled size={16} />
-        </span>
-      )}
+      <button
+        className={`star ${item.staple ? 'on' : ''}`}
+        onClick={() => onStar(item)}
+        aria-pressed={item.staple}
+        aria-label={item.staple ? `Remove ${item.name} from Usuals` : `Add ${item.name} to Usuals`}
+      >
+        <Icon name="star" filled={item.staple} size={20} />
+      </button>
     </li>
   )
 }

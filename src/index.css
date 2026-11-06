@@ -347,8 +347,22 @@ h2 {
 }
 
 .star {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -12px; /* keep the icon aligned with the row padding while the tap area stays 44px */
+  color: color-mix(in srgb, var(--muted) 50%, transparent);
+  transition: color 0.15s, transform 0.15s;
+}
+
+.star.on {
   color: var(--sage);
-  display: flex;
+}
+
+.star:active {
+  transform: scale(0.85);
 }
 
 .usuals {

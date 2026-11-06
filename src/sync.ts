@@ -4,8 +4,9 @@ import { db, type Row, type TableName } from './db'
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
 
-/** null = local-only mode (no backend configured yet). */
-export const supabase: SupabaseClient | null = url && key ? createClient(url, key) : null
+/** null = local-only mode: no backend configured, or VITE_LOCAL_ONLY=1 for testing without touching real data. */
+const localOnly = import.meta.env.VITE_LOCAL_ONLY === '1'
+export const supabase: SupabaseClient | null = url && key && !localOnly ? createClient(url, key) : null
 
 const TABLES: TableName[] = ['lists', 'items']
 
