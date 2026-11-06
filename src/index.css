@@ -577,3 +577,18 @@ h2 {
     transition: none !important;
   }
 }
+
+.add-btn {
+  flex: none;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--sage-strong);
+  color: var(--on-sage);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.chips.suggest {
+  margin-top: 8px;
+}
