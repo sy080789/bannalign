@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **bannalign** is a household app for two people (Stephen and Amanda) at 6 Bannatyne. It's an installable mobile web app (PWA) used on iPhones from the home screen. It's not in the App Store. Everything has to stay on free tiers (Vercel, Supabase, GitHub). The owner isn't technical, and Claude owns the code end to end.
 
-Roadmap: Lists (groceries + household, **done**) → Recipes (**done**) → House maintenance (seasonal checklist with completion log, plus "issues" with photo timelines) → Plants (watering schedule) → read-only Google Calendar. Push notifications come with Maintenance/Plants. HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
+Roadmap: Lists (groceries + household, **done**) → Recipe groups inside Groceries (**done**; the separate Recipes tab was removed) → Plants (watering schedule, next) → House maintenance (seasonal checklist with completion log, plus "issues" with photo timelines) → read-only Google Calendar. Push notifications come with Maintenance/Plants. HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
 
 ## Commands
 
@@ -48,7 +48,7 @@ On this Windows machine, Node and Git may be missing from PATH in a fresh shell.
 
 Keep pure logic in `logic.ts`-style modules so Vitest can test it without a browser.
 
-**Recipes and server functions.**
+**Recipe groups (Groceries) and server functions.**
 - `api/*.ts` are Vercel functions using the Web signature (`export async function GET(req: Request)`).
 - In dev, the `devApi` plugin in `vite.config.ts` serves them through `ssrLoadModule`.
 - Their relative imports **must use `.js` extensions**. Vercel runs them as native ESM, and `tsconfig.node.json` (nodenext) type-checks `api/` to enforce this.
@@ -58,7 +58,7 @@ Keep pure logic in `logic.ts`-style modules so Vitest can test it without a brow
   - size and time limits
 - `/api/scrape` reads schema.org Recipe JSON-LD (`src/features/recipes/extract.ts`, pure code), falling back to `og:` tags. `/api/image` proxies images.
 - The scraper identifies itself honestly. Many sites (AllRecipes, Serious Eats, Budget Bytes) answer with 403. The app then fills in the name from the URL and asks the user to paste the ingredients. **Don't add bot-check evasion** (spoofed browser UAs, crawler UAs, scraping proxies).
-- Recipe ingredients are stored as their original lines. `ingredients.ts` parses them only in `AddToListSheet`, which reuses `addByName` and sets `items.source` to the recipe name (shown as "for X"). `source` is cleared by "Clear checked" and by hand entry in `QuickAdd`.
+- Stephen shops by recipe, so Groceries has a "By recipe | By aisle" toggle (`groups.ts`, `RecipeGroups.tsx`). A group is a `recipes` row; an item joins it via `items.source` = recipe id (older rows hold the recipe *name*; `groupOf` falls back to matching it). `addToGroup` gives each recipe its own line for a shared ingredient. A recipe with nothing on the list shows as a "Make again" chip that reopens `AddToListSheet`. Ingredients are stored as original lines and parsed by `ingredients.ts` only when added. "Clear checked" nulls `source` and stamps `last_cooked` (orders Make again). `photo.ts` and `/api/image` are unused now and kept for Maintenance photos.
 - Photos: `photo.ts` resizes to WebP (with a JPEG fallback) and uploads to the public Supabase Storage bucket `photos` under a random UUID name. Workbox caches them for offline use. In local-only mode they're stored as data URLs.
 
 **PWA.** `vite-plugin-pwa` uses `registerType: 'prompt'`. `UpdateBanner` checks for a new version each time the app comes to the foreground and shows "tap to update", because installed iOS web apps otherwise hold on to old versions.
@@ -78,6 +78,6 @@ Update this file in the same commit as any change that would otherwise make it w
 - a new feature folder or synced table
 - a change to sync, auth or schema behaviour
 - a new iOS gotcha you discovered
-- the roadmap moving forward (e.g. "Recipes, **done**")
+- the roadmap moving forward (e.g. "Plants, **done**")
 
 Keep it lean, because it costs tokens on every session. Record decisions and things that are easy to break, not facts that are obvious from reading one file. Remove anything that no longer holds rather than adding caveats around it.

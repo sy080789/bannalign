@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Route, Routes } from 'react-router-dom'
+import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import { FEATURES } from './features'
 import { supabase } from './sync'
 import { Login } from './components/Login'
@@ -7,9 +7,6 @@ import { StatusPill } from './components/StatusPill'
 import { UpdateBanner } from './components/UpdateBanner'
 import { ListsPage } from './features/lists/ListsPage'
 import { TodayPage } from './features/today/TodayPage'
-import { RecipeDetail } from './features/recipes/RecipeDetail'
-import { RecipeForm } from './features/recipes/RecipeForm'
-import { RecipesPage } from './features/recipes/RecipesPage'
 
 export default function App() {
   // Local-only mode (no Supabase yet) skips sign-in entirely.
@@ -34,10 +31,7 @@ export default function App() {
           <Route path="/" element={<TodayPage />} />
           <Route path="/lists" element={<ListsPage />} />
           <Route path="/lists/:listId" element={<ListsPage />} />
-          <Route path="/recipes" element={<RecipesPage />} />
-          <Route path="/recipes/new" element={<RecipeForm />} />
-          <Route path="/recipes/:id" element={<RecipeDetail />} />
-          <Route path="/recipes/:id/edit" element={<RecipeForm />} />
+          <Route path="/recipes/*" element={<Navigate to="/lists/groceries" replace />} />
           {FEATURES.filter((f) => !f.ready).map((f) => (
             <Route key={f.path} path={f.path} element={<ComingSoon label={f.label} />} />
           ))}
