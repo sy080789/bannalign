@@ -63,11 +63,11 @@ Keep pure logic in `logic.ts`-style modules so Vitest can test it without a brow
 
 **Plants.** `plants` holds the schedule (`interval_days`, `last_watered`, `snooze_until`); `plant_events` is the timeline (`kind` water|photo, `by`). Due math is in `plants/logic.ts` and counts local calendar days; a snooze ("Still wet") overrides the schedule until watered. `whoAmI()` (`src/people.ts`) maps the signed-in email to Stephen/Amanda. Due plants appear on Today via `PlantRow`.
 
-**House** (, one tab with Upkeep | Fix | Projects; tables , , , and  as the shared timeline keyed by ).
-- Upkeep tasks store .  snaps to the task's preferred  (6-monthly → two months), so a late fall job comes back next fall. Starter tasks (, Toronto timing) get first due dates from : out-of-season ones wait for their month; the rest, and all Safety, spread over 8 weeks. The starter picker hides tasks already added (by name), so it can be reopened.
-- Issues: //; watched ones can have  →  (shows on Today). The issue page compares the first and latest photos.
-- Projects rank by fractional  (), so a drag rewrites one row. Dragging is handle-only ( on the handle) so the list still scrolls on iOS.
-- Deleting from a form navigates back with  and the list page shows the Undo toast.
+**House** (`features/house`, one tab with Upkeep | Fix | Projects; tables `tasks`, `issues`, `projects`, and `house_events` as the shared timeline keyed by `parent_id`).
+- Upkeep tasks store `next_due`. `nextDue` snaps to the task's preferred `month` (6-monthly → two months), so a late fall job comes back next fall. Starter tasks (`starter.ts`, Toronto timing) get first due dates from `stagger`: out-of-season ones wait for their month; the rest, and all Safety, spread over 8 weeks. The starter picker hides tasks already added (by name), so it can be reopened.
+- Issues: `fix`/`watch`/`fixed`; watched ones can have `check_months` → `next_check` (shows on Today). The issue page compares the first and latest photos.
+- Projects rank by fractional `rank` (`rankBetween`), so a drag rewrites one row. Dragging is handle-only (`touch-action: none` on the handle) so the list still scrolls on iOS.
+- Deleting from a form navigates back with `state.deleted` and the list page shows the Undo toast.
 
 **PWA.** `vite-plugin-pwa` uses `registerType: 'prompt'`. `UpdateBanner` checks for a new version each time the app comes to the foreground and shows "tap to update", because installed iOS web apps otherwise hold on to old versions.
 
