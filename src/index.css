@@ -1097,3 +1097,181 @@ input.bare:focus {
 .overdue-text {
   color: var(--terracotta);
 }
+
+/* ---------- House ---------- */
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.action-row .btn.soft {
+  text-decoration: none;
+}
+
+.parts {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.starter-group h3 {
+  margin: 8px 4px 6px;
+  font-size: 15px;
+}
+
+.starter-row {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+}
+
+.group-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  color: var(--muted);
+}
+
+.group-toggle h2 {
+  margin: 0 4px;
+}
+
+.seg-chips {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 14px;
+  background: var(--surface-2);
+  border-radius: 14px;
+}
+
+.seg-chips button {
+  flex: 1;
+  min-height: 40px;
+  border-radius: 10px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.seg-chips button.on {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.compare {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.compare.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+.compare figure {
+  margin: 0;
+}
+
+.compare img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+.compare:not(.two) img {
+  aspect-ratio: 4 / 3;
+}
+
+.compare figcaption {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.composer {
+  padding: 10px;
+}
+
+.composer textarea {
+  border: 0;
+  padding: 6px;
+  background: none;
+}
+
+.composer textarea:focus {
+  outline: none;
+}
+
+.composer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tl-note {
+  color: var(--text);
+}
+
+.total {
+  margin: 4px 4px 10px;
+}
+
+.project-row {
+  padding-left: 0;
+  background: var(--surface);
+  border-radius: var(--radius);
+  transition: transform 0.15s;
+}
+
+.dragging .project-row {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.project-row.lifted {
+  position: relative;
+  z-index: 2;
+  transition: none;
+  box-shadow: 0 6px 20px rgb(60 45 30 / 20%);
+}
+
+.handle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 52px;
+  color: var(--muted);
+  touch-action: none;
+  cursor: grab;
+}
+
+.rank {
+  flex: none;
+  width: 18px;
+  color: var(--sage-strong);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.project-row .row-main {
+  min-width: 0;
+}
+
+.project-row .name {
+  flex: 1;
+  min-width: 0;
+}

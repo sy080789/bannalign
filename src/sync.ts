@@ -8,7 +8,7 @@ const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
 const localOnly = import.meta.env.VITE_LOCAL_ONLY === '1'
 export const supabase: SupabaseClient | null = url && key && !localOnly ? createClient(url, key) : null
 
-const TABLES: TableName[] = ['lists', 'items', 'recipes', 'plants', 'plant_events']
+const TABLES: TableName[] = ['lists', 'items', 'recipes', 'plants', 'plant_events', 'tasks', 'issues', 'projects', 'house_events']
 
 /** Write locally first, then queue for the server. UI never waits on the network. */
 export async function save<T extends Row>(table: TableName, row: T) {

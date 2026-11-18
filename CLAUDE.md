@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **bannalign** is a household app for two people (Stephen and Amanda) at 6 Bannatyne. It's an installable mobile web app (PWA) used on iPhones from the home screen. It's not in the App Store. Everything has to stay on free tiers (Vercel, Supabase, GitHub). The owner isn't technical, and Claude owns the code end to end.
 
-Roadmap: Lists (groceries + household, **done**) → Recipe groups inside Groceries (**done**; the separate Recipes tab was removed) → Plants (**done**) → House maintenance (next) (seasonal checklist with completion log, plus "issues" with photo timelines) → read-only Google Calendar. Push notifications (Web Push) are a later step; until then due items show in Today's "Needs attention". HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
+Roadmap: Lists (groceries + household, **done**) → Recipe groups inside Groceries (**done**; the separate Recipes tab was removed) → Plants (**done**) → House (**done**: Upkeep, Fix, Projects) → push notifications (Web Push, next) → read-only Google Calendar. Until push lands, due items show in Today's "Needs attention". HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
 
 ## Commands
 
@@ -62,6 +62,12 @@ Keep pure logic in `logic.ts`-style modules so Vitest can test it without a brow
 - Photos: `src/photo.ts` resizes to WebP (with a JPEG fallback) and uploads to the public Supabase Storage bucket `photos` under a random UUID name. Workbox caches them for offline use. In local-only mode they're stored as data URLs.
 
 **Plants.** `plants` holds the schedule (`interval_days`, `last_watered`, `snooze_until`); `plant_events` is the timeline (`kind` water|photo, `by`). Due math is in `plants/logic.ts` and counts local calendar days; a snooze ("Still wet") overrides the schedule until watered. `whoAmI()` (`src/people.ts`) maps the signed-in email to Stephen/Amanda. Due plants appear on Today via `PlantRow`.
+
+**House** (, one tab with Upkeep | Fix | Projects; tables , , , and  as the shared timeline keyed by ).
+- Upkeep tasks store .  snaps to the task's preferred  (6-monthly → two months), so a late fall job comes back next fall. Starter tasks (, Toronto timing) get first due dates from : out-of-season ones wait for their month; the rest, and all Safety, spread over 8 weeks. The starter picker hides tasks already added (by name), so it can be reopened.
+- Issues: //; watched ones can have  →  (shows on Today). The issue page compares the first and latest photos.
+- Projects rank by fractional  (), so a drag rewrites one row. Dragging is handle-only ( on the handle) so the list still scrolls on iOS.
+- Deleting from a form navigates back with  and the list page shows the Undo toast.
 
 **PWA.** `vite-plugin-pwa` uses `registerType: 'prompt'`. `UpdateBanner` checks for a new version each time the app comes to the foreground and shows "tap to update", because installed iOS web apps otherwise hold on to old versions.
 

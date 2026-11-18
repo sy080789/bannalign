@@ -64,7 +64,55 @@ export interface PlantEvent extends Row {
   photo_url: string
 }
 
-export type TableName = 'lists' | 'items' | 'recipes' | 'plants' | 'plant_events'
+/** House → Upkeep: a repeating task. `next_due` is stored (set when done, or staggered when added from the starter list). */
+export interface Task extends Row {
+  name: string
+  category: string
+  interval_months: number
+  month: number // preferred month 1–12 (e.g. gutters in Nov), 0 = any
+  steps: string
+  parts: string // e.g. "16×25×1 filter", shown on the list
+  notes: string
+  next_due: string
+  last_done: string | null
+  last_done_by: string
+}
+
+/** House → Fix: something to fix or keep an eye on. */
+export interface Issue extends Row {
+  title: string
+  room: string
+  status: 'fix' | 'watch' | 'fixed'
+  check_months: number // 0 = no check-in reminder
+  next_check: string | null
+  fixed_at: string | null
+}
+
+/** House → Projects: ranked wish list. `rank` is fractional so a move rewrites one row. */
+export interface Project extends Row {
+  title: string
+  rank: number
+  status: 'idea' | 'quotes' | 'done'
+  cost_low: number | null
+  cost_high: number | null
+  actual_cost: number | null
+  notes: string
+  links: string // one per line
+  done_at: string | null
+  issue_id: string | null
+}
+
+/** Timeline for tasks (done) and issues (photo/note/check/status). */
+export interface HouseEvent extends Row {
+  parent_id: string
+  kind: 'done' | 'photo' | 'note' | 'check' | 'status'
+  at: string
+  by: string
+  note: string
+  photo_url: string
+}
+
+export type TableName = 'lists' | 'items' | 'recipes' | 'plants' | 'plant_events' | 'tasks' | 'issues' | 'projects' | 'house_events'
 
 export interface OutboxEntry {
   key: string // `${table}:${id}` — one entry per row, so repeated edits coalesce
@@ -83,6 +131,10 @@ export const db = new Dexie('bannalign') as Dexie & {
   recipes: EntityTable<Recipe, 'id'>
   plants: EntityTable<Plant, 'id'>
   plant_events: EntityTable<PlantEvent, 'id'>
+  tasks: EntityTable<Task, 'id'>
+  issues: EntityTable<Issue, 'id'>
+  projects: EntityTable<Project, 'id'>
+  house_events: EntityTable<HouseEvent, 'id'>
   outbox: EntityTable<OutboxEntry, 'key'>
   meta: EntityTable<Meta, 'key'>
 }
@@ -96,6 +148,7 @@ db.version(1).stores({
 
 db.version(2).stores({ recipes: 'id' })
 db.version(3).stores({ plants: 'id', plant_events: 'id, plant_id' })
+db.version(4).stores({ tasks: 'id', issues: 'id', projects: 'id', house_events: 'id, parent_id' })
 
 export const DEFAULT_LISTS: Omit<List, 'updated_at'>[] = [
   { id: 'groceries', name: 'Groceries', sort: 0 },

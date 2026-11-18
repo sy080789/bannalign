@@ -154,7 +154,94 @@ begin
     execute format('create index if not exists %I on public.%I (synced_at)', t || '_synced_at', t);
     execute format('drop trigger if exists %I on public.%I', t || '_lww', t);
     execute format('create trigger %I before insert or update on public.%I for each row execute function public.lww()', t || '_lww', t);
-    execute format('alter table public.%I enable row level security', t);
+
+    execute format('drop policy if exists members_all on public.%I', t);
+    execute format('create policy members_all on public.%I for all to authenticated using (public.is_member()) with check (public.is_member())', t);
+    begin
+      execute format('alter publication supabase_realtime add table public.%I', t);
+    exception when duplicate_object then null;
+    end;
+  end loop;
+end $$;
+
+alter table public.plants enable row level security;
+alter table public.plant_events enable row level security;
+
+-- ---------- Phase 4: House (Upkeep, Fix, Projects) ----------
+
+create table if not exists public.tasks (
+  id text primary key,
+  name text not null,
+  category text not null default '',
+  interval_months integer not null default 12,
+  month integer not null default 0,
+  steps text not null default '',
+  parts text not null default '',
+  notes text not null default '',
+  next_due timestamptz not null,
+  last_done timestamptz,
+  last_done_by text not null default '',
+  updated_at timestamptz not null,
+  deleted boolean not null default false,
+  synced_at timestamptz not null default now()
+);
+
+create table if not exists public.issues (
+  id text primary key,
+  title text not null,
+  room text not null default '',
+  status text not null default 'fix',
+  check_months integer not null default 0,
+  next_check timestamptz,
+  fixed_at timestamptz,
+  updated_at timestamptz not null,
+  deleted boolean not null default false,
+  synced_at timestamptz not null default now()
+);
+
+create table if not exists public.projects (
+  id text primary key,
+  title text not null,
+  rank double precision not null default 0,
+  status text not null default 'idea',
+  cost_low numeric,
+  cost_high numeric,
+  actual_cost numeric,
+  notes text not null default '',
+  links text not null default '',
+  done_at timestamptz,
+  issue_id text,
+  updated_at timestamptz not null,
+  deleted boolean not null default false,
+  synced_at timestamptz not null default now()
+);
+
+create table if not exists public.house_events (
+  id text primary key,
+  parent_id text not null,
+  kind text not null,
+  at timestamptz not null,
+  by text not null default '',
+  note text not null default '',
+  photo_url text not null default '',
+  updated_at timestamptz not null,
+  deleted boolean not null default false,
+  synced_at timestamptz not null default now()
+);
+
+-- Written out (not in a loop) so the SQL Editor can see RLS is on.
+alter table public.tasks enable row level security;
+alter table public.issues enable row level security;
+alter table public.projects enable row level security;
+alter table public.house_events enable row level security;
+
+do $$
+declare t text;
+begin
+  foreach t in array array['tasks', 'issues', 'projects', 'house_events'] loop
+    execute format('create index if not exists %I on public.%I (synced_at)', t || '_synced_at', t);
+    execute format('drop trigger if exists %I on public.%I', t || '_lww', t);
+    execute format('create trigger %I before insert or update on public.%I for each row execute function public.lww()', t || '_lww', t);
     execute format('drop policy if exists members_all on public.%I', t);
     execute format('create policy members_all on public.%I for all to authenticated using (public.is_member()) with check (public.is_member())', t);
     begin

@@ -10,6 +10,12 @@ import { TodayPage } from './features/today/TodayPage'
 import { PlantDetail } from './features/plants/PlantDetail'
 import { PlantForm } from './features/plants/PlantForm'
 import { PlantsPage } from './features/plants/PlantsPage'
+import { HousePage } from './features/house/HousePage'
+import { IssueForm } from './features/house/IssueForm'
+import { IssuePage } from './features/house/IssuePage'
+import { ProjectForm } from './features/house/ProjectForm'
+import { TaskForm } from './features/house/TaskForm'
+import { TaskPage } from './features/house/TaskPage'
 
 export default function App() {
   // Local-only mode (no Supabase yet) skips sign-in entirely.
@@ -34,6 +40,16 @@ export default function App() {
           <Route path="/" element={<TodayPage />} />
           <Route path="/lists" element={<ListsPage />} />
           <Route path="/lists/:listId" element={<ListsPage />} />
+          <Route path="/house" element={<HousePage />} />
+          <Route path="/house/fix" element={<HousePage />} />
+          <Route path="/house/projects" element={<HousePage />} />
+          <Route path="/house/projects/:id" element={<ProjectForm />} />
+          <Route path="/house/tasks/new" element={<TaskForm />} />
+          <Route path="/house/tasks/:id" element={<TaskPage />} />
+          <Route path="/house/tasks/:id/edit" element={<TaskForm />} />
+          <Route path="/house/issues/new" element={<IssueForm />} />
+          <Route path="/house/issues/:id" element={<IssuePage />} />
+          <Route path="/house/issues/:id/edit" element={<IssueForm />} />
           <Route path="/plants" element={<PlantsPage />} />
           <Route path="/plants/new" element={<PlantForm />} />
           <Route path="/plants/:id" element={<PlantDetail />} />

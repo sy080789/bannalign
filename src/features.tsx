@@ -12,6 +12,6 @@ export interface Feature {
 export const FEATURES: Feature[] = [
   { path: '/', label: 'Today', icon: <Icon name="sun" />, ready: true },
   { path: '/lists', label: 'Lists', icon: <Icon name="list" />, ready: true },
-  { path: '/house', label: 'House', icon: <Icon name="house" />, ready: false },
+  { path: '/house', label: 'House', icon: <Icon name="house" />, ready: true },
   { path: '/plants', label: 'Plants', icon: <Icon name="leaf" />, ready: true },
 ]
