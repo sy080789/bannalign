@@ -26,7 +26,7 @@ export interface Item extends Row {
   staple: boolean
   in_list: boolean
   checked: boolean
-  source?: string | null // recipe name this was added for, shown as "for Tacos"
+  source?: string | null // recipe group id (older rows: recipe name)
 }
 
 export interface Recipe extends Row {
@@ -43,7 +43,28 @@ export interface Recipe extends Row {
   last_cooked: string | null
 }
 
-export type TableName = 'lists' | 'items' | 'recipes'
+export interface Plant extends Row {
+  name: string
+  room: string
+  photo_url: string
+  interval_days: number
+  amount: string // free text, e.g. "1 cup"
+  notes: string
+  last_watered: string | null
+  last_watered_by: string
+  snooze_until: string | null // "still wet, check again" pushes the due date here
+}
+
+/** A plant's timeline: waterings (with who) and dated photos. */
+export interface PlantEvent extends Row {
+  plant_id: string
+  kind: 'water' | 'photo'
+  at: string
+  by: string
+  photo_url: string
+}
+
+export type TableName = 'lists' | 'items' | 'recipes' | 'plants' | 'plant_events'
 
 export interface OutboxEntry {
   key: string // `${table}:${id}` — one entry per row, so repeated edits coalesce
@@ -60,6 +81,8 @@ export const db = new Dexie('bannalign') as Dexie & {
   lists: EntityTable<List, 'id'>
   items: EntityTable<Item, 'id'>
   recipes: EntityTable<Recipe, 'id'>
+  plants: EntityTable<Plant, 'id'>
+  plant_events: EntityTable<PlantEvent, 'id'>
   outbox: EntityTable<OutboxEntry, 'key'>
   meta: EntityTable<Meta, 'key'>
 }
@@ -72,6 +95,7 @@ db.version(1).stores({
 })
 
 db.version(2).stores({ recipes: 'id' })
+db.version(3).stores({ plants: 'id', plant_events: 'id, plant_id' })
 
 export const DEFAULT_LISTS: Omit<List, 'updated_at'>[] = [
   { id: 'groceries', name: 'Groceries', sort: 0 },

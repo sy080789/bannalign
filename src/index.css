@@ -808,3 +808,288 @@ input.bare:focus {
 .small-note a {
   color: var(--sage-strong);
 }
+
+/* ---------- Detail pages and forms (Plants) ---------- */
+
+.detail-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 -8px 8px;
+}
+
+.detail-bar .spacer,
+.bar-title {
+  flex: 1;
+}
+
+.bar-title {
+  margin: 0;
+  text-align: center;
+}
+
+.btn.link.strong {
+  font-weight: 700;
+}
+
+.detail-bar .btn.link {
+  flex: none;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.hero {
+  width: calc(100% + 32px);
+  margin: -8px -16px 16px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.meta {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.notes {
+  margin: 0;
+  padding: 14px 16px;
+  white-space: pre-wrap;
+}
+
+.fab {
+  position: fixed;
+  right: max(16px, calc(50% - 264px));
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 16px);
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--sage-strong);
+  color: var(--on-sage);
+  box-shadow: 0 4px 16px rgb(60 45 30 / 25%);
+}
+
+.btn.inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 0 20px;
+  text-decoration: none;
+}
+
+.form-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); /* stop long inputs from widening the page */
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.field small {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.chips.static {
+  flex-wrap: wrap;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+}
+
+.chip.on {
+  background: var(--sage-strong);
+  color: var(--on-sage);
+}
+
+.photo-pick {
+  display: grid;
+  place-items: center;
+  min-height: 120px;
+  overflow: hidden;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.photo-pick img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.stepper button {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--sage-strong);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.stepper input {
+  width: 64px;
+  text-align: center;
+}
+
+/* ---------- Plants ---------- */
+
+.plant-link {
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.plant-row {
+  padding-left: 12px;
+}
+
+.plant-thumb {
+  flex: none;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.plant-thumb.ph {
+  display: grid;
+  place-items: center;
+  background: var(--sage-soft);
+  color: var(--sage-strong);
+}
+
+.due {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.due.is-due {
+  color: var(--sage-strong);
+  font-weight: 600;
+}
+
+.due.is-overdue {
+  color: var(--terracotta);
+  font-weight: 600;
+}
+
+.water-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -6px;
+  border-radius: 50%;
+  color: var(--muted);
+}
+
+.water-btn.is-due,
+.water-btn.is-overdue {
+  background: var(--sage-soft);
+  color: var(--sage-strong);
+}
+
+.water-btn:active {
+  transform: scale(0.88);
+}
+
+.status-card {
+  padding: 14px 16px;
+  border-left: 4px solid var(--sage);
+}
+
+.status-card.is-overdue {
+  border-left-color: var(--terracotta);
+}
+
+.status-card.is-overdue strong {
+  color: var(--terracotta);
+}
+
+.status-card p {
+  margin: 2px 0 0;
+  font-size: 15px;
+}
+
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.action-row .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn.soft {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.photo-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.timeline .row {
+  color: var(--sage-strong);
+}
+
+.timeline .name {
+  color: var(--text);
+}
+
+.tl-photo {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.tl-photo img {
+  width: 100%;
+  border-radius: 12px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+
+.field input,
+.field textarea {
+  color: var(--text);
+}

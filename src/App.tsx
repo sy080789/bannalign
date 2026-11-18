@@ -7,6 +7,9 @@ import { StatusPill } from './components/StatusPill'
 import { UpdateBanner } from './components/UpdateBanner'
 import { ListsPage } from './features/lists/ListsPage'
 import { TodayPage } from './features/today/TodayPage'
+import { PlantDetail } from './features/plants/PlantDetail'
+import { PlantForm } from './features/plants/PlantForm'
+import { PlantsPage } from './features/plants/PlantsPage'
 
 export default function App() {
   // Local-only mode (no Supabase yet) skips sign-in entirely.
@@ -31,6 +34,10 @@ export default function App() {
           <Route path="/" element={<TodayPage />} />
           <Route path="/lists" element={<ListsPage />} />
           <Route path="/lists/:listId" element={<ListsPage />} />
+          <Route path="/plants" element={<PlantsPage />} />
+          <Route path="/plants/new" element={<PlantForm />} />
+          <Route path="/plants/:id" element={<PlantDetail />} />
+          <Route path="/plants/:id/edit" element={<PlantForm />} />
           <Route path="/recipes/*" element={<Navigate to="/lists/groceries" replace />} />
           {FEATURES.filter((f) => !f.ready).map((f) => (
             <Route key={f.path} path={f.path} element={<ComingSoon label={f.label} />} />
@@ -53,7 +60,7 @@ function ComingSoon({ label }: { label: string }) {
   return (
     <div className="empty">
       <h1>{label}</h1>
-      <p>Coming soon. We're getting Lists just right first.</p>
+      <p>Coming soon.</p>
     </div>
   )
 }

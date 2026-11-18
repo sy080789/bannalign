@@ -1,4 +1,4 @@
-import { supabase } from '../../sync'
+import { supabase } from './sync'
 
 /** Shrinks a photo to ~900px on the long edge (keeps uploads small and fast on cellular). */
 async function resize(blob: Blob, max = 900): Promise<Blob> {

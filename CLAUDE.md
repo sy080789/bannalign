@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **bannalign** is a household app for two people (Stephen and Amanda) at 6 Bannatyne. It's an installable mobile web app (PWA) used on iPhones from the home screen. It's not in the App Store. Everything has to stay on free tiers (Vercel, Supabase, GitHub). The owner isn't technical, and Claude owns the code end to end.
 
-Roadmap: Lists (groceries + household, **done**) → Recipe groups inside Groceries (**done**; the separate Recipes tab was removed) → Plants (watering schedule, next) → House maintenance (seasonal checklist with completion log, plus "issues" with photo timelines) → read-only Google Calendar. Push notifications come with Maintenance/Plants. HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
+Roadmap: Lists (groceries + household, **done**) → Recipe groups inside Groceries (**done**; the separate Recipes tab was removed) → Plants (**done**) → House maintenance (next) (seasonal checklist with completion log, plus "issues" with photo timelines) → read-only Google Calendar. Push notifications (Web Push) are a later step; until then due items show in Today's "Needs attention". HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
 
 ## Commands
 
@@ -26,7 +26,7 @@ On this Windows machine, Node and Git may be missing from PATH in a fresh shell.
 
 **Every write goes through `save(table, row)` in `src/sync.ts`.** It stamps `updated_at`, writes the row locally and puts it in `outbox`. The outbox is keyed `table:id`, so repeated edits to one row merge into one entry. Never call `db.<table>.put` directly for synced data, or the change will never reach the server.
 
-**Sync loop (`syncOnce`).** First it pushes the outbox with an upsert per table. Then it pulls each table where `synced_at > cursor`; cursors are kept in the `meta` table. A pulled row is skipped if that row still has a pending local edit. Sync runs on startup, when the app returns to the foreground (`visibilitychange`), when the network comes back (`online`), on sign-in, and on Supabase Realtime events. iOS doesn't sync in the background, so don't depend on realtime alone.
+**Sync loop (`syncOnce`).** Each table syncs independently (one failing, e.g. a new table before the schema is re-run, doesn't block the rest). First it pushes the outbox with an upsert per table. Then it pulls each table where `synced_at > cursor`; cursors are kept in the `meta` table. A pulled row is skipped if that row still has a pending local edit. Sync runs on startup, when the app returns to the foreground (`visibilitychange`), when the network comes back (`online`), on sign-in, and on Supabase Realtime events. iOS doesn't sync in the background, so don't depend on realtime alone.
 
 **Server side (`supabase/schema.sql`, pasted by hand into the Supabase SQL Editor; there are no migrations tooling).**
 - The `lww()` trigger drops any update older than the stored row (last write wins) and stamps the server-side `synced_at`, which the pull cursor depends on.
@@ -58,8 +58,10 @@ Keep pure logic in `logic.ts`-style modules so Vitest can test it without a brow
   - size and time limits
 - `/api/scrape` reads schema.org Recipe JSON-LD (`src/features/recipes/extract.ts`, pure code), falling back to `og:` tags. `/api/image` proxies images.
 - The scraper identifies itself honestly. Many sites (AllRecipes, Serious Eats, Budget Bytes) answer with 403. The app then fills in the name from the URL and asks the user to paste the ingredients. **Don't add bot-check evasion** (spoofed browser UAs, crawler UAs, scraping proxies).
-- Stephen shops by recipe, so Groceries has a "By recipe | By aisle" toggle (`groups.ts`, `RecipeGroups.tsx`). A group is a `recipes` row; an item joins it via `items.source` = recipe id (older rows hold the recipe *name*; `groupOf` falls back to matching it). `addToGroup` gives each recipe its own line for a shared ingredient. A recipe with nothing on the list shows as a "Make again" chip that reopens `AddToListSheet`. Ingredients are stored as original lines and parsed by `ingredients.ts` only when added. "Clear checked" nulls `source` and stamps `last_cooked` (orders Make again). `photo.ts` and `/api/image` are unused now and kept for Maintenance photos.
-- Photos: `photo.ts` resizes to WebP (with a JPEG fallback) and uploads to the public Supabase Storage bucket `photos` under a random UUID name. Workbox caches them for offline use. In local-only mode they're stored as data URLs.
+- Stephen shops by recipe, so Groceries has a "By recipe | By aisle" toggle (`groups.ts`, `RecipeGroups.tsx`). A group is a `recipes` row; an item joins it via `items.source` = recipe id (older rows hold the recipe *name*; `groupOf` falls back to matching it). `addToGroup` gives each recipe its own line for a shared ingredient. A recipe with nothing on the list shows as a "Make again" chip that reopens `AddToListSheet`. Ingredients are stored as original lines and parsed by `ingredients.ts` only when added. "Clear checked" nulls `source` and stamps `last_cooked` (orders Make again). `/api/image` is unused now (kept for possible reuse).
+- Photos: `src/photo.ts` resizes to WebP (with a JPEG fallback) and uploads to the public Supabase Storage bucket `photos` under a random UUID name. Workbox caches them for offline use. In local-only mode they're stored as data URLs.
+
+**Plants.** `plants` holds the schedule (`interval_days`, `last_watered`, `snooze_until`); `plant_events` is the timeline (`kind` water|photo, `by`). Due math is in `plants/logic.ts` and counts local calendar days; a snooze ("Still wet") overrides the schedule until watered. `whoAmI()` (`src/people.ts`) maps the signed-in email to Stephen/Amanda. Due plants appear on Today via `PlantRow`.
 
 **PWA.** `vite-plugin-pwa` uses `registerType: 'prompt'`. `UpdateBanner` checks for a new version each time the app comes to the foreground and shows "tap to update", because installed iOS web apps otherwise hold on to old versions.
 

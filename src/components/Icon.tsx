@@ -9,6 +9,9 @@ const PATHS: Record<string, string> = {
   plus: 'M12 5v14M5 12h14',
   close: 'M6 6l12 12M18 6 6 18',
   chevron: 'M9 6l6 6-6 6',
+  back: 'M15 6l-6 6 6 6',
+  drop: 'M12 3.5s6 6.4 6 10.5a6 6 0 0 1-12 0c0-4.1 6-10.5 6-10.5Z',
+  camera: 'M4 8h3l2-3h6l2 3h3v11H4ZM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z',
 }
 
 export function Icon({ name, filled = false, size = 24 }: { name: string; filled?: boolean; size?: number }) {

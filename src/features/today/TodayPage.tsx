@@ -1,10 +1,13 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { db } from '../../db'
+import { db, type Plant } from '../../db'
 import { Icon } from '../../components/Icon'
 import { useToast } from '../../components/Toast'
 import { QuickAdd } from '../lists/QuickAdd'
+import { water } from '../plants/actions'
+import { PlantRow } from '../plants/PlantRow'
+import { byDue, isDue } from '../plants/logic'
 
 function greeting() {
   const h = new Date().getHours()
@@ -26,8 +29,9 @@ export function TodayPage() {
     {} as Record<string, number>,
   )
 
-  // Phase 3/4 features will push due/overdue cards in here (maintenance, plants).
-  const attention: { id: string; text: string }[] = []
+  // Due/overdue things from each feature (plants now; house maintenance later).
+  const duePlants = useLiveQuery(async () => (await db.plants.toArray()).filter((p) => !p.deleted && isDue(p)).sort(byDue()), [], [])
+  const onWater = async (p: Plant) => toast.show(`Watered ${p.name}`, await water(p))
 
   return (
     <>
@@ -39,7 +43,13 @@ export function TodayPage() {
 
       <section className="group">
         <h2>Needs attention</h2>
-        {attention.length === 0 ? (
+        {duePlants.length > 0 ? (
+          <ul className="card rows">
+            {duePlants.map((p) => (
+              <PlantRow key={p.id} plant={p} onWater={onWater} />
+            ))}
+          </ul>
+        ) : (
           <div className="card calm">
             <Icon name="leaf" />
             <div>
@@ -47,7 +57,7 @@ export function TodayPage() {
               <p className="muted">Plant and house reminders will show up here.</p>
             </div>
           </div>
-        ) : null}
+        )}
       </section>
 
       <section className="group">

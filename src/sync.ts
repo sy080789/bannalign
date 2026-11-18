@@ -8,7 +8,7 @@ const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
 const localOnly = import.meta.env.VITE_LOCAL_ONLY === '1'
 export const supabase: SupabaseClient | null = url && key && !localOnly ? createClient(url, key) : null
 
-const TABLES: TableName[] = ['lists', 'items', 'recipes']
+const TABLES: TableName[] = ['lists', 'items', 'recipes', 'plants', 'plant_events']
 
 /** Write locally first, then queue for the server. UI never waits on the network. */
 export async function save<T extends Row>(table: TableName, row: T) {
@@ -47,11 +47,16 @@ async function syncOnce() {
 
   // 1. Push: one upsert per table. The server trigger keeps whichever version is newer.
   const pending = await db.outbox.toArray()
+  let failed: unknown = null
   for (const table of TABLES) {
     const rows = pending.filter((p) => p.table === table)
     if (!rows.length) continue
     const { error } = await supabase.from(table).upsert(rows.map((p) => p.row))
-    if (error) throw error
+    // One table failing (e.g. schema not yet re-run for a new table) must not stop the others syncing.
+    if (error) {
+      failed = error
+      continue
+    }
     // Only clear entries that weren't edited again while we were uploading.
     await db.transaction('rw', db.outbox, async () => {
       for (const p of rows) {
@@ -71,7 +76,10 @@ async function syncOnce() {
       .gt('synced_at', cursor)
       .order('synced_at')
       .limit(1000)
-    if (error) throw error
+    if (error) {
+      failed = error
+      continue
+    }
     if (!data?.length) continue
     await db.transaction('rw', db.table(table), db.outbox, db.meta, async () => {
       for (const { synced_at: _s, ...remote } of data) {
@@ -81,6 +89,7 @@ async function syncOnce() {
       await db.meta.put({ key: cursorKey, value: data[data.length - 1].synced_at })
     })
   }
+  if (failed) throw failed
 }
 
 /** Sync on open, on return to foreground, on reconnect, and on realtime pings. */
