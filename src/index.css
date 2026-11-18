@@ -1093,3 +1093,7 @@ input.bare:focus {
 .field textarea {
   color: var(--text);
 }
+
+.overdue-text {
+  color: var(--terracotta);
+}

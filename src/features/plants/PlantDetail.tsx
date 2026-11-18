@@ -57,14 +57,14 @@ export function PlantDetail() {
 
       {plant.photo_url ? <img className="hero" src={plant.photo_url} alt="" /> : null}
       <h1>{plant.name}</h1>
-      <p className="meta">
+      <p className={`meta ${due.tone === 'overdue' ? 'overdue-text' : ''}`}>
         {[plant.room, `every ${plural(plant.interval_days, 'day')}`, plant.amount].filter(Boolean).join(' · ')}
       </p>
 
       <div className={`status-card card is-${due.tone}`}>
         <div>
           <strong>{due.text}</strong>
-          <p className="muted">
+          <p className={due.tone === 'overdue' ? 'overdue-text' : 'muted'}>
             {plant.last_watered ? `Last watered ${ago(plant.last_watered)}${plant.last_watered_by ? ` by ${plant.last_watered_by}` : ''}` : 'Not watered yet'}
           </p>
         </div>
