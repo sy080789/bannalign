@@ -63,7 +63,7 @@ export function byRecipe(onList: Item[], recipes: Recipe[]): Section[] {
   const sections = [...map.values()].sort((a, b) => a.recipe!.name.localeCompare(b.recipe!.name))
   if (loose.length) sections.push({ recipe: null, items: loose, done: 0 })
   for (const s of sections) {
-    const aisle = (i: Item) => CATEGORIES.indexOf(i.category)
+    const aisle = (i: Item) => (CATEGORIES as readonly string[]).indexOf(i.category)
     const todo = s.items.filter((i) => !i.checked).sort((a, b) => aisle(a) - aisle(b) || byName(a, b)) // store order
     const done = s.items.filter((i) => i.checked).sort(byName)
     s.items = [...todo, ...done]
