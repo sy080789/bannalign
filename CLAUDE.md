@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **bannalign** is a household app for two people (Stephen and Amanda) at 6 Bannatyne. It's an installable mobile web app (PWA) used on iPhones from the home screen. It's not in the App Store. Everything has to stay on free tiers (Vercel, Supabase, GitHub). The owner isn't technical, and Claude owns the code end to end.
 
-Roadmap: Lists (groceries + household, **done**) → Recipe groups inside Groceries (**done**; the separate Recipes tab was removed) → Plants (**done**) → House (**done**: Upkeep, Fix, Projects) → push notifications (Web Push, next) → read-only Google Calendar. Until push lands, due items show in Today's "Needs attention". HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
+Roadmap: Lists (groceries + household, **done**) → Recipe groups inside Groceries (**done**; the separate Recipes tab was removed) → Plants (**done**) → House (**done**: Upkeep, Fix, Projects) → tab-bar attention dots (**done**) → read-only Google Calendar. Push notifications were deliberately deferred (Stephen: dots are enough; maybe plant-watering push later). Due items show in Today's "Needs attention"; `src/attention.ts` puts a terracotta dot on Plants (any plant due today/overdue) and House (only overdue tasks or missed check-ins). HomeHub (github.com/ThomasRooyakkers/HomeHub, MIT) is a design reference only, not a fork.
 
 ## Commands
 

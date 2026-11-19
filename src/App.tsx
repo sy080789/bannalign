@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import { FEATURES } from './features'
+import { useAttention } from './attention'
 import { supabase } from './sync'
 import { Login } from './components/Login'
 import { StatusPill } from './components/StatusPill'
@@ -20,6 +21,7 @@ import { TaskPage } from './features/house/TaskPage'
 export default function App() {
   // Local-only mode (no Supabase yet) skips sign-in entirely.
   const [authed, setAuthed] = useState<boolean | null>(supabase ? null : true)
+  const dots = useAttention()
 
   useEffect(() => {
     if (!supabase) return
@@ -62,8 +64,11 @@ export default function App() {
       </main>
       <nav className="tabbar">
         {FEATURES.map((f) => (
-          <NavLink key={f.path} to={f.path} end={f.path === '/'} className="tab">
-            {f.icon}
+          <NavLink key={f.path} to={f.path} end={f.path === '/'} className="tab" aria-label={dots[f.path] ? `${f.label}, needs attention` : undefined}>
+            <span className="tab-icon">
+              {f.icon}
+              {dots[f.path] && <span className="tab-dot" />}
+            </span>
             <span>{f.label}</span>
           </NavLink>
         ))}

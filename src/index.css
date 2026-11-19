@@ -202,6 +202,23 @@ h2 {
   color: var(--sage-strong);
 }
 
+.tab-icon {
+  position: relative;
+  display: flex;
+}
+
+/* Something on this tab needs attention (due plant, overdue upkeep). */
+.tab-dot {
+  position: absolute;
+  top: -2px;
+  right: -5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
 /* ---------- Lists ---------- */
 
 .segmented {
